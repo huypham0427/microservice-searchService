@@ -1,6 +1,8 @@
 package com.example.search.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,6 +26,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public Map<Integer, Map[]> fetchAllEmployeesByAges(List<Integer> ages) {
+        System.out.println("Calling method");
         List<CompletableFuture> completableFutureList = new ArrayList<>();
         for(int age: ages) {
             completableFutureList.add(
@@ -41,5 +44,11 @@ public class EmployeeServiceImpl implements EmployeeService{
                         }
                         return res;
                     }).join();
+    }
+
+    @Override
+    public String getResponseFall(RuntimeException e) {
+        System.out.println("All retried completed, Fallback method is called");
+        return "All retried completed, Fallback method is called";
     }
 }
